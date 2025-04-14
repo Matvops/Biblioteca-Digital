@@ -18,6 +18,9 @@ return new class extends Migration
                 ->references('id')
                 ->on("authors")
                 ->cascadeOnDelete();
+            $table->foreignId("category_id")
+                ->references("id")
+                ->on("categories");
             $table->string("title", 150);
             $table->integer("year");
             $table->boolean("readed")->nullable()->default(false);
