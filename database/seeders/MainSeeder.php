@@ -12,6 +12,6 @@ class MainSeeder extends Seeder
      */
     public function run(): void
     {
-        $this->call([AuthorsTableSeeder::class, BooksTableSeeder::class]);
+        $this->call([CategoriesTableSeeder::class, AuthorsTableSeeder::class, BooksTableSeeder::class]);
     }
 }
