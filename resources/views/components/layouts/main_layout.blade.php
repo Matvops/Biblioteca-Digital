@@ -12,7 +12,7 @@
         }
     </style>
 </head>
-<body>
+<body class="bg-stone-50">
     {{ $content }}
 </body>
 </html>
