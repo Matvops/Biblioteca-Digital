@@ -16,7 +16,7 @@ class MainController extends Controller
         $this->service = new MainService;
     }
 
-    public function home(Request $request): View
+    public function home(Request $request)
     {
         $request->validate(
             [
@@ -41,6 +41,14 @@ class MainController extends Controller
         $years = $this->service->searchAllYears();
 
         $books = $this->service->searchWithFilters($filters);
+
+        if(!$books->getStatus()) {
+            
+            return redirect()
+                ->back()
+                ->withInput()
+                ->with('searchFail', $books->getMessage());
+        }
 
         return view('home', [
             "categories" => $categories,

@@ -20,7 +20,8 @@ class MainService {
         return DB::table("books")
                 ->groupBy("year")
                 ->orderBy("year", "desc")
-                ->get("year");
+                ->get("year")
+                ->toArray();
     }
 
     public function searchWithFilters($filters): Response
