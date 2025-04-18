@@ -1,6 +1,7 @@
 <x-layouts.main_layout title="home">
 <x-slot:content>
 
+
 <x-header title="Digital Library"/>
 
 <section class="w-[80%] mx-auto mt-12">
