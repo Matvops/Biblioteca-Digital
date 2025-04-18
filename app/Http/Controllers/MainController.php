@@ -2,32 +2,50 @@
 
 namespace App\Http\Controllers;
 
+use App\services\MainService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\View\View;
 
 class MainController extends Controller
 {
-    public function home(): View
+    private MainService $service;
+
+    public function __construct()
     {
-        $categories = DB::table("categories")->get()->toArray();
-        
-        $years = DB::table("books")
-            ->groupBy("year")
-            ->orderBy("year", "desc")
-            ->get("year");
+        $this->service = new MainService;
+    }
 
-        $books = DB::table("books")
-            ->join("authors", "author_id", "=", "authors.id")
-            ->get()
-            ->toArray();
+    public function home(Request $request): View
+    {
+        $request->validate(
+            [
+                'year' => 'required',
+                'category' => 'required'
+            ],
+            [
+                'year.required' => 'OBRIGATÓRIO SELECIONAR ANO!',
+                'category.required' => 'OBRIGATÓRIO SELECIONAR CATEGORIA!',
+            ]
+        );
 
-        error_log(json_encode($books[0]->image));
+
+        $filters = [
+            'year' => $request->input('year'),
+            'category' => $request->input('category'),
+            'input' => $request->input('book'),
+        ];
+
+        $categories = $this->service->searchAllCategories();
+    
+        $years = $this->service->searchAllYears();
+
+        $books = $this->service->searchWithFilters($filters);
 
         return view('home', [
             "categories" => $categories,
             "years" => $years,
-            "books" => $books
+            "books" => $books->getData()
         ]);
     }
 }
