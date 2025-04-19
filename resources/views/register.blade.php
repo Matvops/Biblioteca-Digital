@@ -4,7 +4,7 @@
         <x-header title="REGISTER" />
 
         <main>
-            <form enctype="multipart/form-data" action="{{ route('createSubmit') }}" method="post" class="flex bg-white w-[50vw] min-w-[500px] m-auto my-[3%] px-6 py-8 rounded-sm shadow-stone-300 shadow-xs">
+            <form enctype="multipart/form-data" action="{{ route('createSubmit') }}" method="post" class="flex bg-white w-[50vw] min-w-[500px] m-auto my-[3%] px-4 py-6 rounded-sm shadow-stone-300 shadow-xs">
                 @csrf
                 <div>
                     <div class=my-12>
@@ -39,19 +39,25 @@
                         </div>
                     </div>
 
-                    <div class="h-12 my-12">
-                        <div class="mr-auto">
-                            <button type="button" 
-                                class="text-white text-3xl font-semibold main-font rounded-sm shadow-md shadow-zinc-400 px-2 py-3
-                                    bg-stone-400 cursor-pointer hover:shadow-lg hover:shadow-zinc-500 hover:px-2.5 transition-all duration-100"
-                            >
-                            <label class="cursor-pointer">
-                                <input type="file" name="image" id="image" hidden> Image
-                            </label>
-                            </button>
-                        </div>
+                    <div class="my-12 w-full h-12">
+                        <label for="author" class="uppercase font-bold text-5xl main-font">LINK</label>
+                        <input type="text" name="url" id="url" placeholder="INSERT A URL" autofocus required
+                            class="bg-stone-200 mt-5 rounded-sm px-1 shadow-black inset-shadow-2xs text-xl font-semibold 
+                            py-2 outline-0 px-2 border-stone-300 focus:border-1 focus:px-3.5 transition-all duration-150 w-full" />
                     </div>
 
+                    
+                   
+                    <button type="button" 
+                        class="mt-12 text-white text-3xl font-semibold main-font rounded-sm shadow-md shadow-zinc-400 px-2 py-3
+                            bg-stone-400 cursor-pointer hover:shadow-lg hover:shadow-zinc-500 hover:px-2.5 transition-all duration-100"
+                    >
+                        <label class="cursor-pointer">
+                            <input type="file" name="image" id="image" hidden> Image
+                        </label>
+                    </button>
+                   
+                    
                     <div class="h-12 my-12 flex justify-between">
                         <div class="mr-auto">
                             <a href="{{ route('home') }}">

@@ -12,7 +12,7 @@
         </div>
 
         <div class="flex gap-6">
-            <a href="#" class="text-blue-400 text-lg hover:text-blue-500 text-shadow-stone-200 hover:text-shadow-md transition-all duration-100">
+            <a href="{{ $book->url }}" target="blank" class="text-blue-400 text-lg hover:text-blue-500 text-shadow-stone-200 hover:text-shadow-md transition-all duration-100">
                 {{$book->readed ?  'Lido' : 'Ler'}}
             </a>
             <a href="#" class="text-blue-400 text-lg hover:text-blue-500 text-shadow-stone-200 hover:text-shadow-md  transition-all duration-100">Editar</a>

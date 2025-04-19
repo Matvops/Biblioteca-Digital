@@ -114,6 +114,7 @@ class MainController extends Controller
             'author_id' => $request->input('author'),
             'year' => $request->input('year'),
             'category_id' => $request->input('category'),
+            'url' => $request->input('url'),
             'image' => $request->file('image'),
             'created_at' => Carbon::now('America/Sao_Paulo')
         ];
