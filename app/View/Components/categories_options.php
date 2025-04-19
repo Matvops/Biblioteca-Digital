@@ -9,12 +9,14 @@ use Illuminate\View\Component;
 class categories_options extends Component
 {
     protected $options;
+    protected $placeholder;
     /**
      * Create a new component instance.
      */
-    public function __construct($options)
+    public function __construct($options, $placeholder = "ALL CATEGORIES")
     {
         $this->options = $options;
+        $this->placeholder = $placeholder;
     }
 
     /**
