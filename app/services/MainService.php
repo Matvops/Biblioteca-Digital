@@ -10,6 +10,48 @@ use Illuminate\Support\Facades\DB;
 
 class MainService {
 
+    public function create($data){
+        try {
+            DB::beginTransaction();
+        
+           
+            $filename = date('YmdH') . $data['image']->getClientOriginalName();
+            $data['image']->move(public_path('uploads'), $filename);
+            $data['image'] =   'projects/bibli-digital/public/uploads/' . $filename;
+
+            $data['author_id'] = $this->getAuthorId($data['author_id']);
+
+            if(!DB::table('books')->insert($data)) 
+                throw new Exception();
+            
+            DB::commit();
+            return Response::getResponse(true, '');
+
+        } catch (Exception $e) {
+            DB::rollBack();
+            error_log(json_encode($e));
+            return Response::getResponse(false, "Falha ao cadastrar livro");
+        }
+    }
+
+    private function getAuthorId($name) {
+
+        $author = DB::table('authors')
+            ->whereLike("name", "_" . "$name" . "_")
+            ->first();
+        
+        if(empty($author)) {
+
+            DB::table('authors')->insert(['name' => $name]);
+
+            $author = DB::table('authors')
+                ->whereLike("name", "%$name%")
+                ->first();
+        }
+
+        return $author->id;
+    }
+
     public function searchAllCategories(){
 
         return DB::table("categories")->get()->toArray();
