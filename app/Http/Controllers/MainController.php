@@ -124,4 +124,39 @@ class MainController extends Controller
 
         return redirect()->route('home');
     }
+
+
+    public function update($id) {
+
+        $response = $this->service->searchBookById($id);
+
+        if(!$response->getStatus()) {
+            return redirect()
+                ->back()
+                ->withInput()
+                ->with("updateFail", $response->getMessage());
+        }
+
+        $book_category = $this->service->searchCategoryById($response->getData()->category_id);
+
+        if(!$book_category->getStatus()) {
+            return redirect()
+                ->back()
+                ->withInput()
+                ->with("updateFail", $book_category->getMessage());
+        }
+
+        $categories = $this->service->searchAllCategories();
+
+        foreach($categories as $category) {
+            if($category->id != $book_category->getData()->id) {
+                $categoriesWithoutCategoryBook[] = $category;
+            }
+        }
+
+        return view('update', [ 
+                'categories' => $categoriesWithoutCategoryBook,
+                'book' => $response->getData()
+            ]);
+    }
 }
