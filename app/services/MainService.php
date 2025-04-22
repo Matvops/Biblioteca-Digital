@@ -6,9 +6,49 @@ use App\Exceptions\FilterException;
 use App\Exceptions\NotFoundException;
 use App\Utils\Response;
 use Exception;
+use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\DB;
 
 class MainService {
+
+    public function searchCategoryById($id){
+        try {
+
+            $category = DB::table('categories')
+                ->where('id', $id)
+                ->first();
+
+            if(empty($category)) 
+                throw new NotFoundException("Não foi possível localizar esta categoria");
+
+            return Response::getResponse(true, '', $category);
+        } catch (NotFoundException $e){
+            return Response::getResponse(false, $e->getMessage());
+        } catch (Exception $e) {
+            return Response::getResponse(false, 'Erro ao carregar os dados');
+        }
+    }
+
+    public function searchBookById($id){
+        try {
+            $id = Crypt::decrypt($id);
+
+            $data = DB::table('books')
+                ->join('authors', 'author_id', '=', 'authors.id')
+                ->join('categories', 'category_id', '=', 'categories.id')
+                ->where('books.id', $id)
+                ->first(['books.*', 'authors.name']);
+
+            if(empty($data)) 
+                throw new NotFoundException("Não foi possível carregar os dados!");
+
+            return Response::getResponse(true, '', $data);
+        } catch (NotFoundException $e){
+            return Response::getResponse(false, $e->getMessage());
+        } catch (Exception $e) {
+            return Response::getResponse(false, 'Erro ao carregar os dados');
+        }
+    }
 
     public function create($data){
         try {
@@ -87,7 +127,7 @@ class MainService {
             $books = DB::table('books')
                 ->join("authors", "author_id", "=", "authors.id")
                 ->whereLike("title", "%$input%")
-                ->get()
+                ->get(['books.*', 'authors.id as author_id', 'authors.name'])
                 ->toArray();
 
             if(empty($books)) 
@@ -112,7 +152,7 @@ class MainService {
            
             return DB::table("books")
                 ->join("authors", "author_id", "=", "authors.id")
-                ->get()
+                ->get(['books.*', 'authors.id as author_id', 'authors.name'])
                 ->toArray();
 
         }  catch (NotFoundException $e) {
@@ -138,7 +178,7 @@ class MainService {
         $books = DB::table("books")
             ->join("authors", "author_id", "=", "authors.id")
             ->where("books.year", $year)
-            ->get()
+            ->get(['books.*', 'authors.id as author_id', 'authors.name'])
             ->toArray();
 
         if(empty($books))
@@ -152,7 +192,7 @@ class MainService {
         $books = DB::table("books")
                     ->join("authors", "author_id", "=", "authors.id")
                     ->where("books.category_id", $category_id)
-                    ->get()
+                    ->get(['books.*', 'authors.id as author_id', 'authors.name'])
                     ->toArray();
 
         if(empty($books))
@@ -167,7 +207,7 @@ class MainService {
                     ->join("authors", "author_id", "=", "authors.id")
                     ->where("books.year", $year)
                     ->where("books.category_id", $category_id)
-                    ->get()
+                    ->get(['books.*', 'authors.id as author_id', 'authors.name'])
                     ->toArray();
 
         if(empty($books)) 
