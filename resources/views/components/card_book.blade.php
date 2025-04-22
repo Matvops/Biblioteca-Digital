@@ -15,7 +15,8 @@
             <a href="{{ $book->url }}" target="blank" class="text-blue-400 text-lg hover:text-blue-500 text-shadow-stone-200 hover:text-shadow-md transition-all duration-100">
                 {{$book->readed ?  'Lido' : 'Ler'}}
             </a>
-            <a href="#" class="text-blue-400 text-lg hover:text-blue-500 text-shadow-stone-200 hover:text-shadow-md  transition-all duration-100">Editar</a>
+            <p>{{$book->id}}</p>
+            <a href="{{ route('update', ['id' => Crypt::encrypt($book->id)]) }}" class="text-blue-400 text-lg hover:text-blue-500 text-shadow-stone-200 hover:text-shadow-md  transition-all duration-100">Editar</a>
         </div>
     </div>
 </div>
