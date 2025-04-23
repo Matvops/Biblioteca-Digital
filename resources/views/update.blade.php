@@ -4,8 +4,9 @@
         <x-header title="UPDATE" />
 
         <main>
-            <form enctype="multipart/form-data" action="{{ route('createSubmit') }}" method="post" class="flex bg-white w-[50vw] min-w-[500px] m-auto my-[3%] px-4 py-6 rounded-sm shadow-stone-300 shadow-xs">
+            <form enctype="multipart/form-data" action="{{ route('updateSubmit') }}" method="post" class="flex bg-white w-[50vw] min-w-[500px] m-auto mt-[2%] px-4 py-6 rounded-sm shadow-stone-300 shadow-xs">
                 @csrf
+                <input type="hidden" name="id" value="{{ Crypt::encrypt($book->id) }}">
                 <div>
                     <div class=my-12>
                         <label for="title" class="block uppercase font-bold text-5xl main-font">Title</label>
@@ -40,7 +41,7 @@
                     </div>
 
                     <div class="my-12 w-full h-12">
-                        <label for="author" class="uppercase font-bold text-5xl main-font">LINK</label>
+                        <label for="url" class="uppercase font-bold text-5xl main-font">LINK</label>
                         <input type="text" name="url" id="url" placeholder="INSERT A URL" value="{{ $book->url }}" required
                             class="bg-stone-200 mt-5 rounded-sm px-1 shadow-black inset-shadow-2xs text-xl font-semibold 
                             py-2 outline-0 px-2 border-stone-300 focus:border-1 focus:px-3.5 transition-all duration-150 w-full" />
@@ -83,6 +84,10 @@
             </form>
         </main>
 
+        @error('id')
+            <x-toast :message="$message" />
+        @enderror
+
         @error('year')
             <x-toast :message="$message" />
         @enderror
@@ -99,8 +104,8 @@
             <x-toast :message="$message" />
         @enderror
 
-        @error('image')
-            <x-toast :message="$message" />
-        @enderror
+        @if(session('updateFailed'))
+            <x-toast :message="session('updateFailed')" />
+        @endif
     </x-slot:content>
 </x-layouts.main_layout>
