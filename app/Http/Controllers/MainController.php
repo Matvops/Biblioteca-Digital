@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\services\MainService;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\DB;
 use Illuminate\View\View;
 use Laravel\Pail\Files;
@@ -110,12 +111,13 @@ class MainController extends Controller
         );
 
         $data = [
+            'id' => Crypt::decrypt('id'),
             'title' => $request->input('title'),
             'author_id' => $request->input('author'),
             'year' => $request->input('year'),
             'category_id' => $request->input('category'),
             'url' => $request->input('url'),
-            'image' => $request->file('image'),
+            'image' => $request->hasFile('image') ? $request->file('image') : null,
             'created_at' => Carbon::now('America/Sao_Paulo')
         ];
 
@@ -158,5 +160,48 @@ class MainController extends Controller
                 'categories' => $categoriesWithoutCategoryBook,
                 'book' => $response->getData()
             ]);
+    }
+
+    public function updateSubmit(Request $request){
+        $request->validate(
+            [
+                'id' => 'required',
+                'title' => 'required',
+                'author' => 'required',
+                'year' => 'required|integer',
+                'category' => 'required',
+            ],
+            [   
+                'id.required' => 'ERRO AO BUSCAR LIVRO',
+                'title.required' => 'OBRIGATÓRIO SELECIONAR TITULO!',
+                'author.required' => 'OBRIGATÓRIO SELECIONAR AUTOR!',
+                'year.required' => 'OBRIGATÓRIO SELECIONAR ANO!',
+                'year.integer' => 'O ANO PRECISA SER UM NÚMERO INTEIRO!',
+                'category.required' => 'OBRIGATÓRIO SELECIONAR CATEGORIA!',
+            ]
+        );
+
+        $data = [
+            'id' => $request->input('id'),
+            'title' => $request->input('title'),
+            'author_id' => $request->input('author'),
+            'year' => $request->input('year'),
+            'category_id' => $request->input('category') == 0 ? null : $request->input('category'),
+            'url' => $request->input('url'),
+            'image' => $request->file('image'),
+            'created_at' => Carbon::now('America/Sao_Paulo')
+        ];
+
+
+        $response = $this->service->update($data);
+
+        if(!$response->getStatus()) {
+            return redirect()
+                ->back()
+                ->withInput()
+                ->with('updateFailed', $response->getMessage());
+        }
+
+        return redirect()->route('home');
     }
 }

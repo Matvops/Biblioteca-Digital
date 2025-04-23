@@ -9,7 +9,62 @@ use Exception;
 use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\DB;
 
+use function Laravel\Prompts\search;
+
 class MainService {
+
+    public function update($data) {
+        try {
+
+            DB::beginTransaction();
+        
+            $data['id'] = Crypt::decrypt($data['id']);
+            $data['author_id'] = $this->searchAuthorByName($data['author_id']);
+
+            $book = DB::table('books')
+                ->where('id', $data['id'])
+                ->first();
+
+            if($data['image']) {
+                $filename = date('YmdH') . $data['image']->getClientOriginalName();
+                $data['image']->move(public_path('uploads'), $filename);
+                $data['image'] =   'projects/bibli-digital/public/uploads/' . $filename;
+            } else {
+                $data['image'] = $book->image;
+            }
+
+            if(!$data['category_id']) {
+                $data['category_id'] = $book->category_id;
+            }    
+            
+            if(!DB::table('books')->where('id', $data['id'])->update($data)) 
+                throw new Exception();
+            
+            DB::commit();
+            return Response::getResponse(true, '');
+
+        } catch (Exception $e) {
+            DB::rollBack();
+            return Response::getResponse(false, "Falha ao atualizar livro");
+        }
+    }
+
+    public function searchAuthorByName($name) {
+        try {
+            $author = DB::table('authors')
+                ->whereLike('name', "$name")
+                ->first();
+
+            if(empty($author))
+                throw new NotFoundException();
+            
+            return $author->id;
+        } catch (NotFoundException $e) {
+            return Response::getResponse(false, $e->getMessage());
+        } catch(Exception $e) {
+            return Response::getResponse(false, 'Erro ao carregar os dados');
+        }
+    }
 
     public function searchCategoryById($id){
         try {
@@ -69,7 +124,6 @@ class MainService {
 
         } catch (Exception $e) {
             DB::rollBack();
-            error_log(json_encode($e));
             return Response::getResponse(false, "Falha ao cadastrar livro");
         }
     }
